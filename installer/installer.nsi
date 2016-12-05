@@ -2,7 +2,8 @@
 
 ; Define your application name
 !define APPNAME "Open Broadcaster Software"
-!define APPNAMEANDVERSION "Open Broadcaster Software 0.655b"
+!define APPNAMEANDVERSION "Open Broadcaster Software 0.657b"
+!define SETUPVERSIONINFO "0.6.5.7"
 
 ; Additional script dependencies
 !include WinVer.nsh
@@ -90,7 +91,7 @@ Function PreReqCheck
 	dxMissing:
 		MessageBox MB_YESNO|MB_ICONEXCLAMATION "Your system is missing DirectX components that ${APPNAME} requires. Would you like to download them?" IDYES dxtrue IDNO dxfalse
 		dxtrue:
-			ExecShell "open" "http://www.microsoft.com/en-us/download/details.aspx?id=35"
+			ExecShell "open" "https://obsproject.com/go/dxwebsetup"
 		dxfalse:
 		Quit
 	dxOK:
@@ -100,9 +101,7 @@ Function PreReqCheck
 	GetDLLVersion "xinput9_1_0.dll" $R0 $R1
 	IfErrors xinputMissing xinputOK
 	xinputMissing:
-		MessageBox MB_YESNO|MB_ICONEXCLAMATION "Your system is missing XINPUT components (xinput_9_1_0.dll). This may happen if you are running on a Windows Server OS. Would you like to download the required files from a 3rd party website?" IDYES xinputtrue IDNO xinputfalse
-		xinputtrue:
-			ExecShell "open" "http://www.win2012workstation.com/xinput-and-xaudio-dlls/"
+		MessageBox MB_YESNO|MB_ICONEXCLAMATION "Your system is missing XINPUT components (xinput_9_1_0.dll). This may happen if you are running on a Windows Server OS. You may install OBS anyway, but it will not function correctly until you acquire the XINPUT components. Would you like to continue?" IDYES xinputOK IDNO xinputfalse
 		xinputfalse:
 		Quit
 	xinputOK:
@@ -271,7 +270,7 @@ Section "un.OBS Program Files"
 
 	; Clean up Open Broadcaster Software
 	Delete "$PROGRAMFILES32\OBS\OBS.exe"
-	Delete "$PROGRAMFILES32\LICENSE"
+	Delete "$PROGRAMFILES32\OBS\LICENSE"
 	Delete "$PROGRAMFILES32\OBS\libx264-146.dll"
 	Delete "$PROGRAMFILES32\OBS\QSVHelper.exe"
 	Delete "$PROGRAMFILES32\OBS\OBSApi.dll"
@@ -294,7 +293,7 @@ Section "un.OBS Program Files"
 	Delete "$PROGRAMFILES32\OBS\plugins\GraphicsCapture\*.exe"
 	${if} ${RunningX64}
 		Delete "$PROGRAMFILES64\OBS\OBS.exe"
-		Delete "$PROGRAMFILES64\LICENSE"
+		Delete "$PROGRAMFILES64\OBS\LICENSE"
 		Delete "$PROGRAMFILES64\OBS\libx264-146.dll"
 		Delete "$PROGRAMFILES64\OBS\QSVHelper.exe"
 		Delete "$PROGRAMFILES64\OBS\OBSApi.dll"
@@ -364,5 +363,14 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${Section2} "Removes any 3rd party plugins that may be installed."
 	!insertmacro MUI_DESCRIPTION_TEXT ${Section3} "Removes all settings, scenes and sources, profiles, log files and other application data."
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
+
+; Version information
+VIProductVersion ${SETUPVERSIONINFO}
+VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Open Broadcaster Software"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "obsproject.com"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "(c) 2012-2016"
+; FileDescription is what shows in the UAC elevation prompt when signed
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Open Broadcaster Software"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.0"
 
 ; eof
